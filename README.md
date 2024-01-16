@@ -1,7 +1,7 @@
 ## Assessment-Aufgabe für Bewerbung beim Jö-Bonusclub
 
 Dieses Repository beinhaltet ein R-Projekt, in dem ich ein von Jö bereitgestelltes Datenset zu den Umsätzen von Filialen (vermutlich der REWE-Gruppe) in ganz Österreich analysiere. Die Analyse wird zu 100% in R durchgeführt, jedoch ist der Output des R-Makdown-Files ein HTML-Dokument, das einen sehr grossen Teil des Repositorys einnimmt. 
-Die PRojekt-Struktur ist wie folgt:
+Die Projekt-Struktur ist wie folgt:
 
 * 00_master.R ist das Masterfile, das alle anderen Files durchlaufen lässt, d.h. im Grunde muss man nur aktiv dieses eine Skript laufen lassen um die ganze Analyse (inklusive Output als HTML-Dokument) zu generieren. Hier werden auch alle Packages geladen, die später gebraucht werden.
 * 01_assess.R liest die Daten in Rohform ein, sieht sie durch und entfernt NAs (optional). Ausserdem werden hier neue Variablen generiert die in späteren Schritten gebraucht werden. Am Ende speichert es einen neuen Datensatz, der für die eigentliche Analyse bereit ist.
