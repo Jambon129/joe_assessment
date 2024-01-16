@@ -42,7 +42,7 @@ density_plot
 Aufgeschlüsselt nach Bundesland bietet sich folgendes Bild (jeweils Mittelwert und Standardfehler):
 
 ```{r table_ziel, echo=FALSE}
-kable(Zielvar_nach_BL[,-4])
+kable(Zielvar_nach_BL[,-4], digits = 2)
 ```
 
 Oder als Barplot:
@@ -128,7 +128,7 @@ stargazer(r7,r8,r9,
           add.lines = list(c("Bundeland FE", "yes", "yes", "yes" )))
 ```
 
-## Weitergehende Erkenntnisse
+## Ideen für mehr Daten
 
 Der Datensatz erlaubt einen guten Überblick über die Umsatzsituation in den verschiedenen Filialen. Wir lernen was die aggregierten Umsätze (und Umsätze pro m2 sowie Umsätze pro Kund*in) in Österreich sind, sowie aufgeschlüsselt nach Bundesland. Zusätzlich lernen wir, woraus sich die Umsätze zusammensetzen. Es scheint das besonders Filialen im Burgenland besonders umsatzstark sind. Zu guter Letzt untersuche ich zwei wichtige Determinanten von Umsatz, nämlich die Kaufkraft und die Nähe zur Konkurrenz. Folgende Daten wären zusätzlich interessant:
 

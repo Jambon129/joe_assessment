@@ -54,4 +54,4 @@ beepr::beep(2)
 
 
 # send output to myself via gmailR
-source("./05_gmailR.R")
+#source("./05_gmailR.R")

@@ -9,7 +9,7 @@ library(usethis) #only needed for the first time
 gm_auth_configure(path = "gmailfromR.json")
 # usethis::edit_r_environ("user")            #only needed for the first time
 
-# gm_auth()
+gm_auth()
 
 
 
@@ -19,10 +19,10 @@ gm_auth_configure(path = "gmailfromR.json")
 
 corpus <- "<b>Hi,</b> <br>
                Regressionfile ist durchgelaufen. 
-               Ergebnisse befinden sich auch deinem <i>Computer</i> <br>
+               Anbei ein fertig-kompiliertes <i>html-File</i> <br>
                LG, dein R"
 
-addressees <- c("andreaschmielowski@gmail.com")
+addressees <- c("hannah.greber@live.at")
 
 email <- gm_mime() |>
   gm_to(addressees) |>
