@@ -1,0 +1,145 @@
+---
+title: "Analyse der Filialdaten"
+author: "Andreas Chmielowski"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(stargazer)
+library(ggplot2)
+library(ggspatial)
+
+
+load("./data/descriptives_data.RData")
+load("./data/regressions_data.RData")
+
+if (fildat$Zielvariable[1] == fildat$Umsatz[1]) {
+  ziel <- "Umsatz"
+} else {
+  if (fildat$Zielvariable[1] == fildat$`Umsatz pro Kund.`[1]) {
+    ziel <- "Umsatz pro Kopf (Kundschaft)" 
+  } else {
+    if (fildat$Zielvariable[1] == fildat$`Umsatz pro m2`[1]) {
+      ziel <- "Umsatz pro qm"
+    }
+  }
+}
+
+```
+
+## Analyse: `r ziel`
+
+Der Filialdatensatz enthält Informationen zu `r round(nrow(fildat),2)` Filialen. Der mittlere `r ziel`, über alle Filialen gerechnet ist, ist `r mean(fildat$Zielvariable)`. Einen besseren Blick auf die gesamte Verteilung bieten folgender Density Plot:
+
+```{r density, echo=FALSE}
+density_plot
+```
+
+Aufgeschlüsselt nach Bundesland bietet sich folgendes Bild (jeweils Mittelwert und Standardfehler):
+
+```{r table_ziel, echo=FALSE}
+kable(Zielvar_nach_BL[,-4])
+```
+
+Oder als Barplot:
+
+
+```{r barplot, echo=FALSE}
+bars_plot
+```
+
+Oder als Karte:
+
+```{r BLmap, echo=FALSE}
+map_austria
+```
+
+Sind die beobachtbaren Unterschiede zwischen den Bundesländern signifikant? Als Test, eine Reggression mit Dummyvariablen für jedes Bundesland:
+
+```{r reg1, echo=FALSE, results='asis'}
+stargazer(m1,
+          type = "html",
+          covariate.labels = c("Kärnten", "NÖ", "OÖ", "Salzburg", "Steiermark", "Tirol", "Vorarlberg", "Wien"))
+```
+
+## Zusammensetzung Umsatz
+
+Der Umsatz ist wie folgt zusammengesetzt, aufgeschlüsselt nacht Bundesland:
+
+```{r composition1, echo=FALSE, results='asis'}
+
+colnames(Anteil_nach_BL) <- c("Bundesland","Clever", "Ja!Natürlich", "Feinkost", "Obst/Gemüse", "Billa", "Corso", "non-alk.", "alk.", "Aktion", "Rest")
+kable(Anteil_nach_BL, digits = 2)
+```
+Wie ersichtlich, ist die Zusammensetzung der Umsätze über die Bundesländer sehr einheitlich. Ein Barplot mit derselben Information veraunschaulicht das:
+
+```{r composition2, echo=FALSE, results='asis'}
+
+Kategorie_nach_BL
+```
+
+## Determinanten von Umsatz, Umsatz pro Kund. und Umsatz pro qm
+
+Folgende drei Regressionsmodelle zeigen die Assoziation zwischen dem Umsatz und Variationen von 2 unabhängigen Variablen: Die Nähe zu anderen Geschäften und die Kaufkraft der Kundschaft. In allen Modellen wird auf Bundesland-FE kontrolliert.
+```{r reg2, echo=FALSE, results='asis'}
+stargazer(r1,r2,r3,
+          type = "html",
+          covariate.labels = c("Anzahl Verbrauchermärkte, Umkreis 20 km",
+                               "Anzahl Diskonter, Umkreis 20 km",
+                               "Kaufkraft/Kopf, gesamt",
+                               "Kaufkraft/Kopf, Lebensmittel",
+                               "Kaufkraft/Kopf, Drogeriefachhandel"),
+          add.lines = list(c("Bundeland FE", "yes", "yes", "yes" )))
+```
+
+Die drei Modelle zeigen keine einzige signifikante Assoziation; die Standardfehler der geschätzten Koeffizienten sind sehr hoch. 
+
+Die nächsten drei Modelle zeigen die Assoziation zwischen dem Umsatz pro Kund. und denselben unabhängigen Variablen, wieder mit Kontrolle auf Bundesland-FE:
+
+```{r reg3, echo=FALSE, results='asis'}
+stargazer(r4,r5,r6,
+          type = "html",
+          covariate.labels = c("Anzahl Verbrauchermärkte, Umkreis 20 km",
+                               "Anzahl Diskonter, Umkreis 20 km",
+                               "Kaufkraft/Kopf, gesamt",
+                               "Kaufkraft/Kopf, Lebensmittel",
+                               "Kaufkraft/Kopf, Drogeriefachhandel"),
+          dep.var.labels = "Umsatz pro Kund*in",
+          add.lines = list(c("Bundeland FE", "yes", "yes", "yes" )))
+```
+
+Hier sehen wir einen signifikanten negativen Zusammenhang zwischen der Anzahl der Verbrauchermärkte im Umkreis von 20km und Umsatz pro Kunde/Kundin, und das gleiche für die Anzahl der Diskonter im Umkreis von 20 km. Interessanterweise hat auch die Kaufkraft einen signifikanten negativen Effekt auf den Umsatz (inferiores Gut?). 
+
+Und zu guter Letzt, drei Modelle mit dem Umsatz pro Quadratmeter als abhängige Variable, kontrolliert auch Bundesland FE:
+
+```{r reg4, echo=FALSE, results='asis'}
+stargazer(r7,r8,r9,
+          type = "html",
+          covariate.labels = c("Anzahl Verbrauchermärkte, Umkreis 20 km",
+                               "Anzahl Diskonter, Umkreis 20 km",
+                               "Kaufkraft/Kopf, gesamt",
+                               "Kaufkraft/Kopf, Lebensmittel",
+                               "Kaufkraft/Kopf, Drogeriefachhandel"),
+          dep.var.labels = "Umsatz pro m2",
+          add.lines = list(c("Bundeland FE", "yes", "yes", "yes" )))
+```
+
+## Weitergehende Erkenntnisse
+
+Der Datensatz erlaubt einen guten Überblick über die Umsatzsituation in den verschiedenen Filialen. Wir lernen was die aggregierten Umsätze (und Umsätze pro m2 sowie Umsätze pro Kund*in) in Österreich sind, sowie aufgeschlüsselt nach Bundesland. Zusätzlich lernen wir, woraus sich die Umsätze zusammensetzen. Es scheint das besonders Filialen im Burgenland besonders umsatzstark sind. Zu guter Letzt untersuche ich zwei wichtige Determinanten von Umsatz, nämlich die Kaufkraft und die Nähe zur Konkurrenz. Folgende Daten wären zusätzlich interessant:
+
+* Eine genaue Unterscheidung der Filialen in Diskonter (Penny) und "Premium" (Billa etc.). Damit könnte man zum Beispiel genauer untersuchen was es mit dem signifikanten negativen Effekt der Kaufkraft auf sich hat. 
+
+* Die Anzahl der Diskonter und Verbrauchermärkte in einem kleineren Radius als 20km -- gerade in urbanen Gebieten spielt ein so grosser Umkreise eher keine Rolle. Interessnter wären von 5km abwärts.  
+
+* Es wäre auch gut zu wissen welche Filialen im urbanen und welche im ruralen Gebiet sind.
+
+* Für kausale Inferenz wäre es interessant, Paneldaten zu haben, um auf Filial FE zu kontrollieren. 
+
+* zusäzlich wäre es interessant zu wissen, welche Komponenten der Kaufkraft random sind (z.B Lottogewinne). Mit einem schlauen Design könnte man hierbei ein Quasiexperiment nutzen und im Detail untersuchen welche Produkte besonders von der Kaufkraft abhängig sind. (Ev. Bawag-Daten von jö verwenden?) -- allderdings wäre das eher etwas für Individualdaten.
+
+* Ansonsten: Andere mögliche Determinanten inkludieren, etwa für Random Forest: die oben genannten Dummies, Zentralität der Adresse, Kundenbewertungen, Datum/Jahreszeit (falls Panel)
