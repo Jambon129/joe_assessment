@@ -46,10 +46,12 @@ source("./02_descriptives.R")
 source("./03_regressions.R")
 
 # compile the document
-rmarkdown::render("./final_doc.Rmd")
-
-# send output to myself via gmailR
-source("./04_gmailR.R")
+rmarkdown::render("./04_final_doc.Rmd")
 
 # make beep noise when done
 beepr::beep(2)
+
+
+
+# send output to myself via gmailR
+source("./05_gmailR.R")
